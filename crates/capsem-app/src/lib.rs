@@ -252,6 +252,17 @@ fn capsem_home_dir() -> PathBuf {
 }
 
 pub fn run(context: tauri::Context<tauri::Wry>) {
+    // NVIDIA's EGL-Wayland explicit sync makes WebKitGTK die with Wayland
+    // protocol error 71 on some compositors (seen on Hyprland with the 5xx
+    // drivers). Turning explicit sync off keeps GPU rendering; the usual
+    // advice, WEBKIT_DISABLE_DMABUF_RENDERER=1, falls back to software. The
+    // variable is only read by the NVIDIA driver, and a value the user set
+    // wins.
+    #[cfg(target_os = "linux")]
+    if std::env::var_os("__NV_DISABLE_EXPLICIT_SYNC").is_none() {
+        std::env::set_var("__NV_DISABLE_EXPLICIT_SYNC", "1");
+    }
+
     // Log to <capsem_home>/logs/<timestamp>.jsonl
     let log_dir = capsem_home_dir().join("logs");
     let _ = std::fs::create_dir_all(&log_dir);
