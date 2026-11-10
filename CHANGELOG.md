@@ -8,8 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - Write the gateway and tray companion logs to `~/.capsem/logs` on Linux instead of the macOS-only `~/Library/Logs/capsem`, which the service created in the home directory of every Linux user.
+
 - Show the Capsem tray icon on Linux desktops: the tray now initialises GTK and runs its event loop, and the service starts it on Linux as it does on macOS. Hosts without a graphical session are unaffected.
+
 - Stop treating every `/usr/bin` install on Linux as a `.deb` install. On a host without apt (a distribution's own package), `capsem update` downloaded the `.deb`, asked for sudo and then failed, and automatic updates repeated that while never reaching the VM assets. Such an install is now recognised as a system package: the package manager updates the programs and Capsem keeps updating the VM assets.
+
 - Draw the terminal in the font chosen in Settings. The terminal iframe never declared the bundled fonts, so it fell back to the host's `ui-monospace`: SF Mono on macOS, and on Linux a proportional font that left gaps between characters.
 
 - Reuse the supported public release HTTP reader for client continuation and isolate npm publisher configuration from legacy registry credentials while preserving GitHub OIDC authority.
