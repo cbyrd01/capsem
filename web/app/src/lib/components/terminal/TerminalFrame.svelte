@@ -34,6 +34,9 @@
   let destroyed = false;
   let connectionGeneration = 0;
   let everConnected = false;
+  // The parent re-renders the tab strip on every title-update, and the
+  // stream repeats the terminal state with each frame of output.
+  let lastTitle: string | null = null;
   let projection: SessionProjection | null = null;
   let inputCoalescer: TerminalInputCoalescer | null = null;
 
@@ -173,6 +176,7 @@
       reconnectAttempt = 0;
       postToParent({ type: 'connected' });
       socket.send(encodeControl({ type: 'start', kind: StreamKind.TERMINAL }));
+      lastTitle = null;
       projection?.reconnect();
       requestDimensions(true);
       // No keystroke is injected to "redraw the prompt": a newline typed into
@@ -193,7 +197,10 @@
       if (frame.kind === 'status') {
         if (frame.status.type === 'terminal') {
           projection?.state(frame.status.state);
-          postToParent({ type: 'title-update', title: frame.status.state.title });
+          if (frame.status.state.title !== lastTitle) {
+            lastTitle = frame.status.state.title;
+            postToParent({ type: 'title-update', title: lastTitle });
+          }
         }
         if (frame.status.type === 'error') {
           console.warn('[terminal] stream ended vmId=%s reason=%s', vmId, frame.status.message);
