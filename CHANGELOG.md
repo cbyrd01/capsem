@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - Write the gateway and tray companion logs to `~/.capsem/logs` on Linux instead of the macOS-only `~/Library/Logs/capsem`, which the service created in the home directory of every Linux user.
+- Show the Capsem tray icon on Linux desktops: the tray now initialises GTK and runs its event loop, and the service starts it on Linux as it does on macOS. Hosts without a graphical session are unaffected.
 
 - Reuse the supported public release HTTP reader for client continuation and isolate npm publisher configuration from legacy registry credentials while preserving GitHub OIDC authority.
 
